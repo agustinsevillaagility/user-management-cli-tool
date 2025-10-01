@@ -1,33 +1,20 @@
-import axios, { AxiosInstance, AxiosError } from 'axios';
-import { Auth0Config, Auth0User, Auth0Error } from './types';
+import { ManagementClient } from 'auth0';
+import { 
+  Auth0Config, 
+  Auth0User, 
+  Auth0Organization, 
+  Auth0Role
+} from './types';
 
 export class Auth0Client {
-  private httpClient: AxiosInstance;
-  private config: Auth0Config;
+  private managementClient: ManagementClient;
 
   constructor(config: Auth0Config) {
-    this.config = {
-      ...config,
-      baseUrl: config.baseUrl || `https://${config.domain}/api/v2`
-    };
-
-    this.httpClient = axios.create({
-      baseURL: this.config.baseUrl,
-      headers: {
-        'Authorization': `Bearer ${this.config.token}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      timeout: 10000
+    // Remove scope from constructor - it's handled by the token permissions
+    this.managementClient = new ManagementClient({
+      domain: config.domain,
+      token: config.token
     });
-
-    // Add response interceptor for error handling
-    this.httpClient.interceptors.response.use(
-      (response) => response,
-      (error: AxiosError) => {
-        return Promise.reject(this.handleError(error));
-      }
-    );
   }
 
   /**
@@ -41,15 +28,10 @@ export class Auth0Client {
     }
 
     try {
-      const response = await this.httpClient.get('/users-by-email', {
-        params: {
-          email: email
-        }
-      });
-
-      return response.data;
+      const users = await this.managementClient.usersByEmail.getByEmail({ email });
+      return users.data as Auth0User[];
     } catch (error) {
-      throw error;
+      throw this.handleError(error);
     }
   }
 
@@ -64,6 +46,62 @@ export class Auth0Client {
   }
 
   /**
+   * Get all organizations
+   * @returns Promise resolving to an array of Auth0 organizations
+   */
+  async getOrganizations(): Promise<Auth0Organization[]> {
+    try {
+      const response = await this.managementClient.organizations.getAll();
+      return response.data as Auth0Organization[];
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Get all roles
+   * @returns Promise resolving to an array of Auth0 roles
+   */
+  async getRoles(): Promise<Auth0Role[]> {
+    try {
+      const response = await this.managementClient.roles.getAll();
+      return response.data as Auth0Role[];
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Add members to an organization
+   * @param organizationId - The ID of the organization
+   * @param members - Array of member objects with user_id and optional roles
+   * @returns Promise resolving to the response
+   */
+  async addMembersToOrganization(
+    organizationId: string, 
+    members: { user_id: string; roles?: string[] }[]
+  ): Promise<void> {
+    try {
+      await this.managementClient.organizations.addMembers(
+        { id: organizationId },
+        { members: members.map(m => m.user_id) }
+      );
+
+      // If roles are specified, we need to assign them separately
+      for (const member of members) {
+        if (member.roles && member.roles.length > 0) {
+          await this.managementClient.organizations.addMemberRoles(
+            { id: organizationId, user_id: member.user_id },
+            { roles: member.roles }
+          );
+        }
+      }
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
    * Validate email format
    * @param email - Email to validate
    * @returns boolean indicating if email is valid
@@ -74,28 +112,22 @@ export class Auth0Client {
   }
 
   /**
-   * Handle and transform Axios errors
-   * @param error - Axios error object
+   * Handle and transform Auth0 SDK errors
+   * @param error - Auth0 SDK error object
    * @returns Transformed error
    */
-  private handleError(error: AxiosError): Error {
-    if (error.response) {
-      // Server responded with error status
-      const auth0Error = error.response.data as Auth0Error;
-      const message = auth0Error?.error_description || error.message;
-      const statusCode = error.response.status;
-      
-      const enhancedError = new Error(`Auth0 API Error (${statusCode}): ${message}`);
-      (enhancedError as any).statusCode = statusCode;
-      (enhancedError as any).auth0Error = auth0Error;
-      
+  private handleError(error: any): Error {
+    // Auth0 SDK errors typically have a message and statusCode
+    if (error.statusCode) {
+      const message = error.message || 'Auth0 API Error';
+      const enhancedError = new Error(`Auth0 API Error (${error.statusCode}): ${message}`);
+      (enhancedError as any).statusCode = error.statusCode;
+      (enhancedError as any).originalError = error;
       return enhancedError;
-    } else if (error.request) {
-      // Request was made but no response received
-      return new Error('Auth0 API: No response received from server');
-    } else {
-      // Something else happened
+    } else if (error.message) {
       return new Error(`Auth0 API: ${error.message}`);
+    } else {
+      return new Error(`Auth0 API: ${String(error)}`);
     }
   }
 }
