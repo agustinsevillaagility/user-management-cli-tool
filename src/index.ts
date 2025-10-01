@@ -4,4 +4,3 @@
  */
 
 export { Auth0Client } from './auth0-client';
-export * from './types';
