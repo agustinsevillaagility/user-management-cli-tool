@@ -5,15 +5,12 @@
  * A command-line tool for assigning users to organizations with specific roles
  */
 
-import type { GetOrganizations200ResponseOneOfInner, GetOrganizationMemberRoles200ResponseOneOfInner, GetUsers200ResponseOneOfInner } from 'auth0';
+import type { GetOrganizationMemberRoles200ResponseOneOfInner, GetOrganizations200ResponseOneOfInner, GetUsers200ResponseOneOfInner } from 'auth0';
 import chalk from 'chalk';
 import { Command } from 'commander';
-import * as dotenv from 'dotenv';
+import 'dotenv/config';
 import inquirer from 'inquirer';
 import { Auth0Client } from './auth0-client';
-
-// Load environment variables
-dotenv.config();
 
 class Auth0OrganizationCLI {
     private auth0Client: Auth0Client;
@@ -211,7 +208,7 @@ class Auth0OrganizationCLI {
 
                 await this.auth0Client.addMembersToOrganization(org.id, [{
                     user_id: user.user_id,
-                    roles: roleIds.length > 0 ? roleIds : undefined
+                    roles: roleIds,
                 }]);
 
                 console.log(chalk.green(`✓ Successfully added to ${org.display_name || org.name}`));
