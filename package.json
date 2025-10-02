@@ -9,12 +9,12 @@
     "build": "tsc",
     "cli": "npx ts-node src/cli.ts",
     "build-cli": "npm run build && node dist/cli.js",
-    "add-org": "npm run build-cli",
+    "add-arc-user": "npm run build-cli",
     "clean": "rm -rf dist",
     "postinstall": "npm run build"
   },
   "bin": {
-    "add-org": "./dist/cli.js"
+    "add-arc-user": "./dist/cli.js"
   },
   "keywords": [
     "auth0",

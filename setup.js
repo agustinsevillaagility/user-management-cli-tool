@@ -74,9 +74,9 @@ AUTH0_MANAGEMENT_TOKEN=${token}
     console.log('   • create:organization_members');
     console.log('   • read:roles');
     console.log('\n🎉 Setup complete! You can now run:');
-    console.log('   npm run add-org your.email@example.com');
+    console.log('   npm run add-arc-user your.email@example.com');
     console.log('   or');
-    console.log('   npx add-org your.email@example.com');
+    console.log('   npx add-arc-user your.email@example.com');
     
   } catch (error) {
     console.error('❌ Setup failed:', error.message);

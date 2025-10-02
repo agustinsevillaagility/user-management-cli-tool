@@ -4,45 +4,6 @@
 
 Add users to multiple organizations with specific roles through an interactive command-line interface.
 
-## Quick Start
-
-```bash
-# 1. Clone the repository
-git clone <repository-url>
-cd auth0-api-exploration
-
-# 2. Install dependencies
-npm install
-
-# 3. Configure Auth0 credentials (interactive setup)
-npm run setup
-
-# 4. Add a user to organizations
-npm run add-org your.email@example.com
-```
-
-**That's it!** 🎉
-
-## Alternative Usage
-
-Once built, you can also use the global command:
-
-```bash
-# After npm install and build
-npx add-org your.email@example.com
-```
-
-## What It Does
-
-The CLI will:
-
-1. ✅ **Find the user** by email in your Auth0 tenant
-2. ✅ **Load all organizations** and **roles** from Auth0
-3. ✅ **Interactive selection** - choose organizations via multi-select
-4. ✅ **Role assignment** - choose roles via multi-select  
-5. ✅ **Review & confirm** - see exactly what will happen
-6. ✅ **Execute & report** - assign memberships and show results
-
 ## Requirements
 
 ### Auth0 Setup
@@ -63,10 +24,51 @@ You need:
 4. Add the required scopes above
 5. Copy the token
 
+## Quick Start
+
+Once you have a token, you can proceed to setup, then use the CLI. 
+
+```bash
+# 1. Clone the repository
+git clone <repository-url>
+cd auth0-api-exploration
+
+# 2. Install dependencies
+npm install
+
+# 3. Configure Auth0 credentials (interactive setup)
+npm run setup
+
+# 4. Add a user to organizations
+npm run add-arc-user your.email@example.com
+```
+
+**That's it!** 🎉
+
+## Alternative Usage
+
+The project uses an NPM `postinstall` hook to automatically build the program after `npm install` Once built, you can also use the global command:
+
+```bash
+# After npm install (and/or build)
+npx add-arc-user your.email@example.com
+```
+
+## What It Does
+
+The CLI will:
+
+1. ✅ **Find the user** by email in your Auth0 tenant
+2. ✅ **Load all organizations** and **roles** from Auth0
+3. ✅ **Interactive selection** - choose organizations via multi-select
+4. ✅ **Role assignment** - choose roles via multi-select  
+5. ✅ **Review & confirm** - see exactly what will happen
+6. ✅ **Execute & report** - assign memberships and show results
+
 ## Example Session
 
 ```bash
-$ npm run add-org jane.foobar@agilityrobotics.com
+$ npm run add-arc-user jane.foobar@agilityrobotics.com
 
 🔄 Initializing Auth0 Organization CLI...
 ✓ Loaded 5 organizations
