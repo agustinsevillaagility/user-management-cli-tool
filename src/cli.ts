@@ -22,8 +22,28 @@ class Auth0OrganizationCLI {
         const token = process.env.AUTH0_MANAGEMENT_TOKEN;
 
         if (!domain || !token) {
-            console.error(chalk.red('Error: AUTH0_DOMAIN and AUTH0_MANAGEMENT_TOKEN environment variables are required.'));
-            console.log(chalk.yellow('Please copy .env.example to .env and set your Auth0 credentials.'));
+            console.error(chalk.red('❌ Error: Missing Auth0 configuration!'));
+            console.log(chalk.yellow('\n🔧 Quick Setup:'));
+            console.log(chalk.white('   1. Run: npm run setup'));
+            console.log(chalk.white('   2. Enter your Auth0 domain and Management API token'));
+            console.log(chalk.white('   3. Try this command again'));
+            console.log(chalk.gray('\n💡 Need help getting a token? See README.md for instructions'));
+            process.exit(1);
+        }
+
+        // Validate domain format
+        if (!domain.includes('.auth0.com')) {
+            console.error(chalk.red('❌ Invalid AUTH0_DOMAIN format!'));
+            console.log(chalk.yellow('Expected format: your-tenant.auth0.com'));
+            console.log(chalk.white('Run "npm run setup" to configure correctly'));
+            process.exit(1);
+        }
+
+        // Validate token format (basic check)
+        if (token.length < 20) {
+            console.error(chalk.red('❌ AUTH0_MANAGEMENT_TOKEN appears to be invalid (too short)'));
+            console.log(chalk.yellow('Please check your Management API token'));
+            console.log(chalk.white('Run "npm run setup" to reconfigure'));
             process.exit(1);
         }
 
@@ -50,7 +70,30 @@ class Auth0OrganizationCLI {
 
             console.log(chalk.green('✓ Initialization complete!\n'));
         } catch (error) {
-            console.error(chalk.red('Failed to initialize:'), error instanceof Error ? error.message : String(error));
+            console.error(chalk.red('❌ Failed to initialize Auth0 connection'));
+            
+            if (error instanceof Error) {
+                if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+                    console.log(chalk.yellow('\n🔐 Authentication Error:'));
+                    console.log(chalk.white('   Your Management API token may be invalid or expired'));
+                    console.log(chalk.white('   Run "npm run setup" to update your token'));
+                } else if (error.message.includes('403') || error.message.includes('Forbidden')) {
+                    console.log(chalk.yellow('\n🚫 Permission Error:'));
+                    console.log(chalk.white('   Your token is missing required scopes:'));
+                    console.log(chalk.gray('   • read:organizations'));
+                    console.log(chalk.gray('   • read:roles'));
+                    console.log(chalk.gray('   • read:users'));
+                    console.log(chalk.gray('   • create:organization_members'));
+                } else if (error.message.includes('404') || error.message.includes('Not Found')) {
+                    console.log(chalk.yellow('\n🌐 Domain Error:'));
+                    console.log(chalk.white('   Check your AUTH0_DOMAIN setting'));
+                    console.log(chalk.white('   Current domain: ' + process.env.AUTH0_DOMAIN));
+                } else {
+                    console.log(chalk.gray('\nError details:', error.message));
+                }
+            }
+            
+            console.log(chalk.blue('\n💡 Need help? Check the README.md for setup instructions'));
             process.exit(1);
         }
     }
