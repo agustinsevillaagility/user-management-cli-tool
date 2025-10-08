@@ -233,11 +233,13 @@ npm run test:coverage
 ### Test Coverage
 
 The project includes comprehensive unit tests for the Auth0Client:
-- ✅ 29 test cases covering all public methods
-- ✅ 82.92% code coverage
+- ✅ **34 test cases** covering all public methods
+- ✅ **100% code coverage** (statements, branches, functions, lines)
 - ✅ Email validation testing
+- ✅ Organization membership assignment testing
 - ✅ Error handling scenarios
 - ✅ API response mocking
+- ✅ Edge case coverage
 
 ## Environment Variables
 
