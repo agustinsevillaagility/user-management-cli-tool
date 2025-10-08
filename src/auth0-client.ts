@@ -86,8 +86,6 @@ export class Auth0Client {
         members: { user_id: string; roles: string[] }[]
     ): Promise<void> {
 
-        throw new Error('TODO: Aborting… This operation is disabled in the current context to prevent unintended changes.');
-
         try {
             await this.managementClient.organizations.addMembers(
                 { id: organizationId },

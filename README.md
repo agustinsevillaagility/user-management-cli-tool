@@ -213,6 +213,31 @@ Adding user to Engineering Team...
 - **ManagementClient**: Uses Auth0's ManagementClient for all API operations
 - **Type Safety**: Maintains TypeScript interfaces for all Auth0 entities
 - **Error Handling**: Proper error transformation and user-friendly messages
+- **Unit Tests**: Comprehensive test coverage (82.92%) with Jest
+
+## Development
+
+### Running Tests
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage report
+npm run test:coverage
+```
+
+### Test Coverage
+
+The project includes comprehensive unit tests for the Auth0Client:
+- ✅ 29 test cases covering all public methods
+- ✅ 82.92% code coverage
+- ✅ Email validation testing
+- ✅ Error handling scenarios
+- ✅ API response mocking
 
 ## Environment Variables
 
