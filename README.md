@@ -10,23 +10,17 @@ Add users to multiple organizations with specific roles through an interactive c
 
 You need:
 - **Auth0 Domain** (e.g., `your-tenant.auth0.com`)
-- **Management API Token** with these scopes:
-  - `read:organizations`
-  - `read:roles`
-  - `read:users`
-  - `create:organization_members`
+- **Auth0 Application Credentials** (for the "AS- User Management CLI" Application)
 
-### Getting a Management API Token
+### Getting the Auth0 App Credentials
 
-1. Go to Auth0 Dashboard → Applications → Machine to Machine Applications
-2. Create or select an application
-3. Authorize it for the Management API
-4. Add the required scopes above
-5. Copy the token
+1. Go to Auth0 Dashboard → Applications → AS- User Management CLI
+2. Go to Credentials tab
+3. Copy the **Client ID** and **Client Secret**
 
 ## Quick Start
 
-Once you have a token, you can proceed to setup, then use the CLI. 
+Once you have these, you can proceed to setup, then use the CLI. 
 
 ```bash
 # 1. Clone the repository
@@ -55,6 +49,8 @@ npx add-arc-user your.email@example.com
 ```
 
 ## What It Does
+
+The CLI tool allows you to assign users to Auth0 organizations with specific roles through an interactive process.
 
 The CLI will:
 
@@ -110,31 +106,13 @@ Roles: Member
 
 Built with the official Auth0 SDK and TypeScript for reliability and type safety.
 
-# Auth0 API Wrapper
-
-A TypeScript wrapper for the Auth0 Management API with a powerful CLI tool for organization membership management. Built using the **official Auth0 SDK**.
-
 ## Features
 
-- **Official SDK**: Uses the official `auth0` npm package for reliable API access
+- **Uses Official Auth0 SDK**: Uses the official `auth0` npm package for reliable API access. Along with the `@types/auth0` package, we get a nice TypeScript wrapper for the Auth0 Management API with a powerful CLI tool for organization membership management.
 - **API Wrapper**: User lookup by email, organization management, role assignment
 - **CLI Tool**: Interactive organization membership assignment with role selection
 - **Type-safe**: Full TypeScript support with comprehensive interfaces
 - **Error handling**: Robust error handling and user feedback
-
-## CLI Usage - Organization Membership Assignment
-
-The CLI tool allows you to assign users to Auth0 organizations with specific roles through an interactive process.
-
-### Quick Start
-
-```bash
-# Run with development mode
-npm run cli user@example.com
-
-# Or run the built version
-npm run build-cli user@example.com
-```
 
 ### CLI Features
 
@@ -156,56 +134,6 @@ npm run build-cli user@example.com
 7. **Confirmation**: User confirms or cancels the operation
 8. **Execution**: Makes API calls to assign memberships
 9. **Results**: Reports success/failure for each assignment
-
-### Example CLI Session
-
-```bash
-$ npm run cli john@company.com
-
-🔄 Initializing Auth0 Organization Membership CLI...
-Loading organizations...
-✓ Loaded 5 organizations
-Loading roles...
-✓ Loaded 8 roles
-✓ Initialization complete!
-
-Looking up user: john@company.com
-✓ Found user: John Doe (auth0|507f1f77bcf86cd799439011)
-
-? Select organizations to add the user to: (Use <space> to select)
-❯◯ Engineering Team (org_123abc)
- ◯ Marketing Team (org_456def)  
- ◯ Sales Team (org_789ghi)
-
-? Select roles to assign to the user:
-❯◯ Admin - Full administrative access
- ◯ Member - Standard member access
- ◯ Viewer - Read-only access
-
-📋 Review Assignment Details:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-User:
-  • Name: John Doe
-  • Email: john@company.com
-  • User ID: auth0|507f1f77bcf86cd799439011
-
-Organizations:
-  • Engineering Team (org_123abc)
-
-Roles:
-  • Member - Standard member access
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-? Do you want to proceed with these assignments? (y/N)
-
-🔄 Executing membership assignments...
-Adding user to Engineering Team...
-✓ Successfully added to Engineering Team
-
-📊 Assignment Summary:
-✓ Successful assignments: 1
-🎉 Process complete!
-```
 
 ## Technical Implementation
 
@@ -243,17 +171,13 @@ The project includes comprehensive unit tests for the Auth0Client:
 
 ## Environment Variables
 
-Create a `.env` file with:
+After using setup script, you will have an `.env` file with:
 
 ```
 AUTH0_DOMAIN=your-domain.auth0.com
-AUTH0_MANAGEMENT_TOKEN=your-management-api-token
+AUTH0_CLIENT_ID=your-client-id
+AUTH0_CLIENT_SECRET=your-client-secret
+AUTH0_AUDIENCE=https://your-domain.auth0.com/api/v2/
 ```
 
-## Required Auth0 Scopes
-
-Your Management API token needs these scopes:
-- `read:users`
-- `read:organizations` 
-- `create:organization_members`
-- `read:roles`
+See `.env.example` for reference.
