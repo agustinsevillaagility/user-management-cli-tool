@@ -1,5 +1,5 @@
 import { Auth0Client } from '../src/auth0-client';
-import { ManagementClient } from 'auth0';
+import { ManagementClient, type ManagementClientOptionsWithClientSecret } from 'auth0';
 
 // Mock the Auth0 ManagementClient
 jest.mock('auth0');
@@ -12,9 +12,10 @@ describe('Auth0Client', () => {
   let mockOrganizations: { getAll: jest.MockedFunction<any>; addMembers: jest.MockedFunction<any>; addMemberRoles: jest.MockedFunction<any> };
   let mockRoles: { getAll: jest.MockedFunction<any> };
 
-  const mockConfig = {
+  const mockConfig:ManagementClientOptionsWithClientSecret = {
     domain: 'test.auth0.com',
-    token: 'test-token'
+    clientId: 'test-token',
+    clientSecret: 'test-secret',
   };
 
   beforeEach(() => {
@@ -48,7 +49,8 @@ describe('Auth0Client', () => {
     it('should create ManagementClient with correct config', () => {
       expect(ManagementClient).toHaveBeenCalledWith({
         domain: mockConfig.domain,
-        token: mockConfig.token
+        clientId: mockConfig.clientId,
+        clientSecret: mockConfig.clientSecret
       });
     });
   });
