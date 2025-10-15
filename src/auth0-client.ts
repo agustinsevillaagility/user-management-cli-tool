@@ -1,13 +1,14 @@
-import { ManagementClient, type ManagementClientOptionsWithToken } from 'auth0';
+import { ManagementClient, type ManagementClientOptionsWithClientSecret } from 'auth0';
 
 export class Auth0Client {
     private managementClient: ManagementClient;
 
-    constructor(config: ManagementClientOptionsWithToken) {
+    constructor(config: ManagementClientOptionsWithClientSecret) {
         // Remove scope from constructor - it's handled by the token permissions
         this.managementClient = new ManagementClient({
             domain: config.domain,
-            token: config.token
+            clientId: config.clientId,
+            clientSecret: config.clientSecret,
         });
     }
 

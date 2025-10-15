@@ -19,13 +19,15 @@ class Auth0OrganizationCLI {
 
     constructor() {
         const domain = process.env.AUTH0_DOMAIN;
-        const token = process.env.AUTH0_MANAGEMENT_TOKEN;
+        const clientId = process.env.AUTH0_CLIENT_ID;
+        const clientSecret = process.env.AUTH0_CLIENT_SECRET;
+        const audience = process.env.AUTH0_AUDIENCE;
 
-        if (!domain || !token) {
+        if (!domain || !clientId || !clientSecret || !audience) {
             console.error(chalk.red('❌ Error: Missing Auth0 configuration!'));
             console.log(chalk.yellow('\n🔧 Quick Setup:'));
             console.log(chalk.white('   1. Run: npm run setup'));
-            console.log(chalk.white('   2. Enter your Auth0 domain and Management API token'));
+            console.log(chalk.white('   2. Enter your Auth0 domain, client ID, client secret, and audience'));
             console.log(chalk.white('   3. Try this command again'));
             console.log(chalk.gray('\n💡 Need help getting a token? See README.md for instructions'));
             process.exit(1);
@@ -39,17 +41,35 @@ class Auth0OrganizationCLI {
             process.exit(1);
         }
 
-        // Validate token format (basic check)
-        if (token.length < 20) {
-            console.error(chalk.red('❌ AUTH0_MANAGEMENT_TOKEN appears to be invalid (too short)'));
-            console.log(chalk.yellow('Please check your Management API token'));
+        // Validate client ID format (basic check)
+        if (clientId.length < 20) {
+            console.error(chalk.red('❌ AUTH0_CLIENT_ID appears to be invalid (too short)'));
+            console.log(chalk.yellow('Please check your Auth0 Client ID'));
+            console.log(chalk.white('Run "npm run setup" to reconfigure'));
+            process.exit(1);
+        }
+
+        // Validate client secret format (basic check)
+        if (clientSecret.length < 32) {
+            console.error(chalk.red('❌ AUTH0_CLIENT_SECRET appears to be invalid (too short)'));
+            console.log(chalk.yellow('Please check your Auth0 Client Secret'));
+            console.log(chalk.white('Run "npm run setup" to reconfigure'));
+            process.exit(1);
+        }
+
+        // Validate audience format (basic check)
+        if (!audience || !audience.startsWith('https://')) {
+            console.error(chalk.red('❌ AUTH0_AUDIENCE appears to be invalid'));
+            console.log(chalk.yellow('Please check your Auth0 Audience'));
             console.log(chalk.white('Run "npm run setup" to reconfigure'));
             process.exit(1);
         }
 
         this.auth0Client = new Auth0Client({
             domain,
-            token
+            clientId,
+            clientSecret,
+            audience,
         });
     }
 
@@ -71,7 +91,7 @@ class Auth0OrganizationCLI {
             console.log(chalk.green('✓ Initialization complete!\n'));
         } catch (error) {
             console.error(chalk.red('❌ Failed to initialize Auth0 connection'));
-            
+
             if (error instanceof Error) {
                 if (error.message.includes('401') || error.message.includes('Unauthorized')) {
                     console.log(chalk.yellow('\n🔐 Authentication Error:'));
@@ -92,7 +112,7 @@ class Auth0OrganizationCLI {
                     console.log(chalk.gray('\nError details:', error.message));
                 }
             }
-            
+
             console.log(chalk.blue('\n💡 Need help? Check the README.md for setup instructions'));
             process.exit(1);
         }
